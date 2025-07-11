@@ -3,22 +3,37 @@
 import { useRef, useTransition } from "react";
 import { useResume } from "@/contexts/ResumeContext";
 import { Button } from "@/components/ui/button";
-import { Download, Printer, Loader2 } from "lucide-react";
+import { Download, Printer, Loader2, Palette } from "lucide-react";
 import { PrintResume } from "./PrintResume";
 import { downloadAsFile } from "@/lib/utils";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "../ui/label";
 
 export function PreviewPanel() {
-  const { resume } = useResume();
+  const { resume, setResume } = useResume();
   const printRef = useRef<HTMLDivElement>(null);
   const [isDownloadingPdf, startPdfDownload] = useTransition();
+
+  const handleTemplateChange = (template: string) => {
+    setResume((prev) => ({ ...prev, template }));
+  };
 
   const generateTextFile = () => {
     let text = "";
     text += `${resume.personalDetails.name}\n`;
     text += `${resume.personalDetails.jobTitle}\n`;
     text += `\nContact:\n${resume.personalDetails.email} | ${resume.personalDetails.phone} | ${resume.personalDetails.address}\n`;
+    (resume.personalDetails.links || []).forEach(link => {
+        text += `${link.label}: ${link.url}\n`;
+    });
     text += `\n--- Summary ---\n${resume.summary}\n`;
 
     if (resume.experiences.length > 0) {
@@ -64,12 +79,11 @@ export function PreviewPanel() {
       const element = printRef.current;
       if (!element) return;
   
-      // A4 dimensions in mm: 210 x 297. In pixels at 96 DPI: 794 x 1123
       const a4_width = 210;
       const a4_height = 297;
   
       const canvas = await html2canvas(element, {
-        scale: 3, // Higher scale for better quality
+        scale: 3, 
         useCORS: true,
         logging: false,
       });
@@ -81,29 +95,23 @@ export function PreviewPanel() {
         format: "a4",
       });
   
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-      const ratio = imgWidth / imgHeight;
-      let pdfWidth = a4_width;
-      let pdfHeight = pdfWidth / ratio;
-      
-      // If the content is longer than one page
-      let heightLeft = pdfHeight;
+      const canvasWidth = canvas.width;
+      const canvasHeight = canvas.height;
+      const canvasRatio = canvasWidth / canvasHeight;
+      const pdfWidth = a4_width;
+      const pdfHeight = pdfWidth / canvasRatio;
+
+      let heightLeft = canvasHeight * (a4_width / canvasWidth);
       let position = 0;
-      
-      // Check if it fits in one page
-      if (pdfHeight <= a4_height) {
-        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-      } else {
-        // Handle multipage PDF
+
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      heightLeft -= a4_height;
+
+      while (heightLeft > 0) {
+        position -= a4_height;
+        pdf.addPage();
         pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
         heightLeft -= a4_height;
-        while(heightLeft > 0) {
-          position = heightLeft - pdfHeight;
-          pdf.addPage();
-          pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-          heightLeft -= a4_height;
-        }
       }
       
       pdf.save("resume.pdf");
@@ -112,19 +120,34 @@ export function PreviewPanel() {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-shrink-0 bg-card rounded-t-lg p-4 flex justify-end items-center gap-2 border-b">
-        <Button variant="outline" onClick={generateTextFile}>
-          <Download className="mr-2 h-4 w-4" />
-          Download TXT
-        </Button>
-         <Button onClick={handleDownloadPdf} disabled={isDownloadingPdf}>
-          {isDownloadingPdf ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
-          Download PDF
-        </Button>
-        <Button onClick={handlePrint}>
-          <Printer className="mr-2 h-4 w-4" />
-          Print
-        </Button>
+      <div className="flex-shrink-0 bg-card rounded-t-lg p-4 flex justify-between items-center gap-2 border-b">
+        <div className="flex items-center gap-2">
+           <Label htmlFor="template-select" className="flex items-center gap-2 text-sm font-medium"><Palette className="w-4 h-4" /> Template</Label>
+           <Select onValueChange={handleTemplateChange} defaultValue={resume.template}>
+            <SelectTrigger id="template-select" className="w-[180px]">
+              <SelectValue placeholder="Select template" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="default">Default</SelectItem>
+              <SelectItem value="modern">Modern</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={generateTextFile}>
+            <Download className="mr-2 h-4 w-4" />
+            TXT
+          </Button>
+           <Button onClick={handleDownloadPdf} disabled={isDownloadingPdf}>
+            {isDownloadingPdf ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
+            PDF
+          </Button>
+          <Button onClick={handlePrint}>
+            <Printer className="mr-2 h-4 w-4" />
+            Print
+          </Button>
+        </div>
       </div>
       <div className="flex-1 bg-gray-100 p-4 lg:p-8 overflow-y-auto shadow-lg">
         <div 

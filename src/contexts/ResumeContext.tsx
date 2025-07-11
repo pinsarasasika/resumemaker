@@ -21,10 +21,13 @@ export const ResumeProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const savedResume = localStorage.getItem("resumeData");
       if (savedResume) {
-        const parsedData = JSON.parse(savedResume);
-        // Ensure backward compatibility for the links property
+        const parsedData = JSON.parse(savedResume) as ResumeData;
+        // Ensure backward compatibility
         if (!parsedData.personalDetails.links) {
           parsedData.personalDetails.links = [];
+        }
+        if (!parsedData.template) {
+          parsedData.template = 'default';
         }
         setResume(parsedData);
       }

@@ -16,4 +16,5 @@ export const initialData: ResumeData = {
   education: [],
   skills: [],
   customSections: [],
+  template: "default",
 };

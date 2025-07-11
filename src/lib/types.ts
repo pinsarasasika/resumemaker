@@ -51,4 +51,5 @@ export interface ResumeData {
   skills: Skill[];
   customSections: CustomSection[];
   photoDataUri?: string | null;
+  template: string;
 }
