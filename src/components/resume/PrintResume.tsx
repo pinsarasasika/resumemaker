@@ -19,7 +19,7 @@ export function PrintResume({ resume }: PrintResumeProps) {
   const photoSrc = resume.photoDataUri || personalDetails.photoUrl;
 
   return (
-    <div className="bg-white text-gray-800 p-2 sm:p-4 md:p-8 font-body print:p-0">
+    <div className="bg-white text-gray-800 p-8 md:p-12 font-body print:p-8 a4-container">
       <header className="flex flex-col sm:flex-row items-center gap-8 border-b-2 border-gray-200 pb-8">
         {photoSrc && (
           <div className="flex-shrink-0">

@@ -32,11 +32,21 @@ export default function PrintPage() {
     <div className="bg-white">
       <style type="text/css" media="print">
         {`
-          @page { size: auto;  margin: 0mm; }
+          @page { 
+            size: A4;
+            margin: 0;
+          }
           body { -webkit-print-color-adjust: exact; }
+          .a4-container {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+          }
         `}
       </style>
-      <PrintResume resume={resume} />
+      <div id="resume-to-print" className="a4-container">
+        <PrintResume resume={resume} />
+      </div>
     </div>
   );
 }
