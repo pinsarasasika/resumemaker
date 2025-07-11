@@ -7,6 +7,7 @@ import { initialData } from "@/lib/initial-data";
 interface ResumeContextType {
   resume: ResumeData;
   setResume: Dispatch<SetStateAction<ResumeData>>;
+  setPhotoDataUri: (uri: string | null) => void;
 }
 
 const ResumeContext = createContext<ResumeContextType | undefined>(undefined);
@@ -33,8 +34,12 @@ export const ResumeProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [resume, isMounted]);
 
+  const setPhotoDataUri = (uri: string | null) => {
+    setResume(prev => ({ ...prev, photoDataUri: uri }));
+  }
+
   return (
-    <ResumeContext.Provider value={{ resume, setResume }}>
+    <ResumeContext.Provider value={{ resume, setResume, setPhotoDataUri }}>
       {children}
     </ResumeContext.Provider>
   );

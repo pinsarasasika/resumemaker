@@ -15,13 +15,16 @@ export function PrintResume({ resume }: PrintResumeProps) {
     skills,
     customSections,
   } = resume;
+
+  const photoSrc = resume.photoDataUri || personalDetails.photoUrl;
+
   return (
     <div className="bg-white text-gray-800 p-2 sm:p-4 md:p-8 font-body print:p-0">
       <header className="flex flex-col sm:flex-row items-center gap-8 border-b-2 border-gray-200 pb-8">
-        {personalDetails.photoUrl && (
+        {photoSrc && (
           <div className="flex-shrink-0">
              <Image
-              src={personalDetails.photoUrl}
+              src={photoSrc}
               alt={personalDetails.name}
               width={128}
               height={128}

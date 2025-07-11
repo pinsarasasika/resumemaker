@@ -38,9 +38,10 @@ export interface CustomSection {
 
 export interface ResumeData {
   personalDetails: PersonalDetails;
-  summary: string;
+  summary:.tsx string;
   experiences: Experience[];
   education: Education[];
   skills: Skill[];
   customSections: CustomSection[];
+  photoDataUri?: string | null;
 }
