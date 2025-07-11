@@ -21,7 +21,12 @@ export const ResumeProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const savedResume = localStorage.getItem("resumeData");
       if (savedResume) {
-        setResume(JSON.parse(savedResume));
+        const parsedData = JSON.parse(savedResume);
+        // Ensure backward compatibility for the links property
+        if (!parsedData.personalDetails.links) {
+          parsedData.personalDetails.links = [];
+        }
+        setResume(parsedData);
       }
     } catch (error) {
       console.error("Failed to parse resume data from localStorage", error);

@@ -32,7 +32,7 @@ export function PersonalDetailsForm() {
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const { name, value } = e.target;
-    const newLinks = [...resume.personalDetails.links];
+    const newLinks = [...(resume.personalDetails.links || [])];
     newLinks[index] = { ...newLinks[index], [name]: value };
     setResume((prev) => ({
       ...prev,
@@ -49,7 +49,7 @@ export function PersonalDetailsForm() {
       personalDetails: {
         ...prev.personalDetails,
         links: [
-          ...prev.personalDetails.links,
+          ...(prev.personalDetails.links || []),
           { id: crypto.randomUUID(), label: "", url: "" },
         ],
       },
@@ -57,7 +57,7 @@ export function PersonalDetailsForm() {
   };
 
   const removeLink = (index: number) => {
-    const newLinks = resume.personalDetails.links.filter((_, i) => i !== index);
+    const newLinks = (resume.personalDetails.links || []).filter((_, i) => i !== index);
     setResume((prev) => ({
       ...prev,
       personalDetails: {
@@ -206,7 +206,7 @@ export function PersonalDetailsForm() {
 
       <div className="space-y-4">
         <Label>Optional Links (e.g., LinkedIn, GitHub, Website)</Label>
-        {resume.personalDetails.links.map((link, index) => (
+        {(resume.personalDetails.links || []).map((link, index) => (
           <div key={link.id} className="flex gap-2 items-end">
             <div className="flex-1 space-y-1">
               <Label htmlFor={`link-label-${index}`} className="text-xs">Label</Label>
