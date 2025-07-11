@@ -1,3 +1,9 @@
+export interface Link {
+  id: string;
+  label: string;
+  url: string;
+}
+
 export interface PersonalDetails {
   name: string;
   jobTitle: string;
@@ -5,6 +11,7 @@ export interface PersonalDetails {
   phone: string;
   address: string;
   photoUrl: string;
+  links: Link[];
 }
 
 export interface Experience {
@@ -38,7 +45,7 @@ export interface CustomSection {
 
 export interface ResumeData {
   personalDetails: PersonalDetails;
-  summary:.tsx string;
+  summary: string;
   experiences: Experience[];
   education: Education[];
   skills: Skill[];

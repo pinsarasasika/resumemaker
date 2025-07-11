@@ -1,9 +1,23 @@
 import type { ResumeData } from "@/lib/types";
-import { Mail, Phone, MapPin, User, Briefcase, GraduationCap, Star, Grip } from "lucide-react";
+import { Mail, Phone, MapPin, User, Briefcase, GraduationCap, Star, Grip, Link as LinkIcon, Linkedin, Github, Globe } from "lucide-react";
 import Image from "next/image";
 
 interface PrintResumeProps {
   resume: ResumeData;
+}
+
+const getLinkIcon = (label: string) => {
+  const lowerCaseLabel = label.toLowerCase();
+  if (lowerCaseLabel.includes('linkedin')) {
+    return <Linkedin className="w-4 h-4 text-accent"/>;
+  }
+  if (lowerCaseLabel.includes('github')) {
+    return <Github className="w-4 h-4 text-accent"/>;
+  }
+  if (lowerCaseLabel.includes('website') || lowerCaseLabel.includes('portfolio')) {
+    return <Globe className="w-4 h-4 text-accent"/>;
+  }
+  return <LinkIcon className="w-4 h-4 text-accent"/>;
 }
 
 export function PrintResume({ resume }: PrintResumeProps) {
@@ -45,6 +59,12 @@ export function PrintResume({ resume }: PrintResumeProps) {
              <span className="flex items-center gap-2"><Mail className="w-4 h-4 text-accent"/> {personalDetails.email}</span>
              <span className="flex items-center gap-2"><Phone className="w-4 h-4 text-accent"/> {personalDetails.phone}</span>
              <span className="flex items-center gap-2"><MapPin className="w-4 h-4 text-accent"/> {personalDetails.address}</span>
+             {personalDetails.links?.map(link => (
+                <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
+                  {getLinkIcon(link.label)}
+                  {link.url.replace(/^(https?:\/\/)?(www\.)?/, '')}
+                </a>
+             ))}
           </div>
         </div>
       </header>

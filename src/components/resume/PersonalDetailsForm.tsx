@@ -4,7 +4,7 @@ import { useResume } from "@/contexts/ResumeContext";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Loader2, Sparkles } from "lucide-react";
+import { Loader2, Sparkles, Plus, Trash2 } from "lucide-react";
 import React, { useRef, useState, useTransition } from "react";
 import { generateHeadshotAction } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
@@ -23,6 +23,46 @@ export function PersonalDetailsForm() {
       personalDetails: {
         ...prev.personalDetails,
         [name]: value,
+      },
+    }));
+  };
+
+  const handleLinkChange = (
+    index: number,
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { name, value } = e.target;
+    const newLinks = [...resume.personalDetails.links];
+    newLinks[index] = { ...newLinks[index], [name]: value };
+    setResume((prev) => ({
+      ...prev,
+      personalDetails: {
+        ...prev.personalDetails,
+        links: newLinks,
+      },
+    }));
+  };
+
+  const addLink = () => {
+    setResume((prev) => ({
+      ...prev,
+      personalDetails: {
+        ...prev.personalDetails,
+        links: [
+          ...prev.personalDetails.links,
+          { id: crypto.randomUUID(), label: "", url: "" },
+        ],
+      },
+    }));
+  };
+
+  const removeLink = (index: number) => {
+    const newLinks = resume.personalDetails.links.filter((_, i) => i !== index);
+    setResume((prev) => ({
+      ...prev,
+      personalDetails: {
+        ...prev.personalDetails,
+        links: newLinks,
       },
     }));
   };
@@ -122,14 +162,10 @@ export function PersonalDetailsForm() {
           />
         </div>
       </div>
-       {selectedFile && (
-         <div className="flex flex-wrap gap-2 mt-2">
+      {selectedFile && (
+        <div className="flex flex-wrap gap-2 mt-2">
           <Button onClick={handleGenerateHeadshot} disabled={isGenerating}>
-            {isGenerating ? (
-              <Loader2 className="animate-spin" />
-            ) : (
-              <Sparkles />
-            )}
+            {isGenerating ? <Loader2 className="animate-spin" /> : <Sparkles />}
             Generate AI Headshot
           </Button>
         </div>
@@ -166,6 +202,45 @@ export function PersonalDetailsForm() {
           onChange={handleChange}
           placeholder="City, State, Country"
         />
+      </div>
+
+      <div className="space-y-4">
+        <Label>Optional Links (e.g., LinkedIn, GitHub, Website)</Label>
+        {resume.personalDetails.links.map((link, index) => (
+          <div key={link.id} className="flex gap-2 items-end">
+            <div className="flex-1 space-y-1">
+              <Label htmlFor={`link-label-${index}`} className="text-xs">Label</Label>
+              <Input
+                id={`link-label-${index}`}
+                name="label"
+                value={link.label}
+                onChange={(e) => handleLinkChange(index, e)}
+                placeholder="e.g., LinkedIn"
+              />
+            </div>
+            <div className="flex-1 space-y-1">
+              <Label htmlFor={`link-url-${index}`} className="text-xs">URL</Label>
+              <Input
+                id={`link-url-${index}`}
+                name="url"
+                value={link.url}
+                onChange={(e) => handleLinkChange(index, e)}
+                placeholder="https://linkedin.com/in/..."
+              />
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => removeLink(index)}
+              className="mb-1"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        ))}
+        <Button variant="outline" onClick={addLink} className="w-full">
+          <Plus className="mr-2 h-4 w-4" /> Add Link
+        </Button>
       </div>
     </div>
   );

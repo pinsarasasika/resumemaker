@@ -8,6 +8,7 @@ export const initialData: ResumeData = {
     phone: "(123) 456-7890",
     address: "Your City, State",
     photoUrl: "",
+    links: [],
   },
   summary:
     "A brief professional summary about yourself. You can also generate one with AI based on your experience and skills.",
